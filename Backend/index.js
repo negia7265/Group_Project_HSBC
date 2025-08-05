@@ -11,7 +11,7 @@ const connection=mysql.createConnection({
 })
 connection.connect((error)=>{
     if(error){
-        console.log("MySQL connection failed");
+        console.log("MySQL connection failed "+error);
         console.log(error);
     }
     console.log("MySQL connection successful "+connection.threadId);
