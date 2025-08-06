@@ -114,7 +114,7 @@ app.get("/get_profit",(req,res)=>{
 })
 app.get("/get_all_profit",(req,res)=>{
     //ok the improvement that could be made is to add the latest profit to he profit table
-    let query="SELECT * FROM profit";
+    let query="SELECT * FROM profit ORDER BY profit_date DESC LIMIT 15";
     connection.query(query,(error,results)=>{
         if(error){
             console.log("Error fetching all profits");
@@ -174,6 +174,17 @@ app.get("/get_profit_percent/silver", (req, res) => {
         res.json(JSON.parse(JSON.stringify(results)));
     });
 })
+app.get("/get_asset_shares", (req, res) => {
+    let query="SELECT asset_type, ROUND(SUM(quantity * current_price) / SUM(SUM(quantity * current_price)) OVER () * 100,2) AS percent_share FROM holdings GROUP BY asset_type";
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching asset data:", error);
+            return res.status(500).send("Error fetching asset data");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})  
+
 app.listen(8888,()=>{
     console.log("Listening on port 8888!")
 
