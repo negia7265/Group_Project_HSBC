@@ -1,8 +1,9 @@
 let express=require('express');
 let mysql=require("mysql");
+let cors=require("cors");
 let app=express();
 app.use(express.json());
-
+app.use(cors()); // Enable CORS for all routes
 const connection=mysql.createConnection({
     host:"localhost",
     user:"root",
@@ -127,7 +128,52 @@ app.get("/get_all_profit",(req,res)=>{
     })
     // res.send("Here are all your profits!");
 })
+app.get("/get_profit_percent/stock", (req, res) => {
+    let query="SELECT ROUND(((SUM(quantity * current_price) - SUM(quantity * buy_price)) / SUM(quantity * buy_price)) * 100, 2) AS profit_percent FROM holdings WHERE asset_type = 'stock'";
+   
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching asset data:", error);
+            return res.status(500).send("Error fetching asset data");
+        }
+        console.log(results);
 
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_profit_percent/crypto", (req, res) => {
+    let query="SELECT ROUND(((SUM(quantity * current_price) - SUM(quantity * buy_price)) / SUM(quantity * buy_price)) * 100, 2) AS profit_percent FROM holdings WHERE asset_type = 'crypto'";
+    
+    connection.query(query,(error, results) => {
+        if (error) {
+            console.error("Error fetching asset data:", error);
+            return res.status(500).send("Error fetching asset data");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_profit_percent/gold", (req, res) => {
+    let query="SELECT ROUND(((SUM(quantity * current_price) - SUM(quantity * buy_price)) / SUM(quantity * buy_price)) * 100, 2) AS profit_percent FROM holdings WHERE asset_type = 'gold'";
+   
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching asset data:", error);
+            return res.status(500).send("Error fetching asset data");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_profit_percent/silver", (req, res) => {
+    let query="SELECT ROUND(((SUM(quantity * current_price) - SUM(quantity * buy_price)) / SUM(quantity * buy_price)) * 100, 2) AS profit_percent FROM holdings WHERE asset_type = 'silver'";
+    
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching asset data:", error);
+            return res.status(500).send("Error fetching asset data");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
 app.listen(8888,()=>{
     console.log("Listening on port 8888!")
 
