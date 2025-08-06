@@ -184,7 +184,188 @@ app.get("/get_asset_shares", (req, res) => {
         res.json(JSON.parse(JSON.stringify(results)));
     });
 })  
-
+app.get("/get_stock_overview", (req, res) => {
+    let query=`
+SELECT
+    latest.asset_name,
+    latest.asset_type,
+    latest.ticker_symbol,
+    latest.price_date AS latest_date,
+    latest.current_price AS latest_price,
+    previous.price_date AS previous_date,
+    previous.current_price AS previous_price,
+    ROUND(((latest.current_price - previous.current_price) / previous.current_price) * 100, 2) AS price_change_percent
+FROM assets latest
+JOIN assets previous
+  ON latest.asset_name = previous.asset_name
+WHERE latest.asset_type = 'stock'
+  AND previous.asset_type = 'stock'
+  AND latest.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'stock'
+)
+  AND previous.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'stock'
+      AND a.price_date < (
+          SELECT MAX(price_date)
+          FROM assets AS b
+          WHERE b.asset_name = latest.asset_name
+            AND b.asset_type = 'stock'
+      )
+)
+  AND EXISTS (
+    SELECT 1 FROM holdings h 
+    WHERE h.asset_name = latest.asset_name 
+      AND h.asset_type = 'stock'
+  );
+`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching stock overview:", error);
+            return res.status(500).send("Error fetching stock overview");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_crypto_overview", (req, res) => {
+    let query=`SELECT
+    latest.asset_name,
+    latest.asset_type,
+    latest.ticker_symbol,
+    latest.price_date AS latest_date,
+    latest.current_price AS latest_price,
+    previous.price_date AS previous_date,
+    previous.current_price AS previous_price,
+    ROUND(((latest.current_price - previous.current_price) / previous.current_price) * 100, 2) AS price_change_percent
+FROM assets latest
+JOIN assets previous
+  ON latest.asset_name = previous.asset_name
+WHERE latest.asset_type = 'crypto'
+  AND previous.asset_type = 'crypto'
+  AND latest.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'crypto'
+)
+  AND previous.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'crypto'
+      AND a.price_date < (
+          SELECT MAX(price_date)
+          FROM assets AS b
+          WHERE b.asset_name = latest.asset_name
+            AND b.asset_type = 'crypto'
+      )
+)
+  AND EXISTS (
+    SELECT 1 FROM holdings h 
+    WHERE h.asset_name = latest.asset_name 
+      AND h.asset_type = 'crypto'
+  );`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching stock overview:", error);
+            return res.status(500).send("Error fetching stock overview");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_gold_overview", (req, res) => {
+    let query=`SELECT
+    latest.asset_name,
+    latest.asset_type,
+    latest.ticker_symbol,
+    latest.price_date AS latest_date,
+    latest.current_price AS latest_price,
+    previous.price_date AS previous_date,
+    previous.current_price AS previous_price,
+    ROUND(((latest.current_price - previous.current_price) / previous.current_price) * 100, 2) AS price_change_percent
+FROM assets latest
+JOIN assets previous
+  ON latest.asset_name = previous.asset_name
+WHERE latest.asset_type = 'gold'
+  AND previous.asset_type = 'gold'
+  AND latest.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'gold'
+)
+  AND previous.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'gold'
+      AND a.price_date < (
+          SELECT MAX(price_date)
+          FROM assets AS b
+          WHERE b.asset_name = latest.asset_name
+            AND b.asset_type = 'gold'
+      )
+);`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching stock overview:", error);
+            return res.status(500).send("Error fetching stock overview");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
+app.get("/get_silver_overview", (req, res) => {
+    let query=`SELECT
+    latest.asset_name,
+    latest.asset_type,
+    latest.ticker_symbol,
+    latest.price_date AS latest_date,
+    latest.current_price AS latest_price,
+    previous.price_date AS previous_date,
+    previous.current_price AS previous_price,
+    ROUND(((latest.current_price - previous.current_price) / previous.current_price) * 100, 2) AS price_change_percent
+FROM assets latest
+JOIN assets previous
+  ON latest.asset_name = previous.asset_name
+WHERE latest.asset_type = 'silver'
+  AND previous.asset_type = 'silver'
+  AND latest.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'silver'
+)
+  AND previous.price_date = (
+    SELECT MAX(price_date)
+    FROM assets AS a
+    WHERE a.asset_name = latest.asset_name
+      AND a.asset_type = 'silver'
+      AND a.price_date < (
+          SELECT MAX(price_date)
+          FROM assets AS b
+          WHERE b.asset_name = latest.asset_name
+            AND b.asset_type = 'silver'
+      )
+)
+  AND EXISTS (
+    SELECT 1 FROM holdings h
+    WHERE h.asset_name = latest.asset_name
+      AND h.asset_type = 'silver'
+  );
+`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error fetching stock overview:", error);
+            return res.status(500).send("Error fetching stock overview");
+        }
+        res.json(JSON.parse(JSON.stringify(results)));
+    });
+})
 app.listen(8888,()=>{
     console.log("Listening on port 8888!")
 
