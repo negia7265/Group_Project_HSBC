@@ -34,6 +34,40 @@ app.get("/user_details",(req,res)=>{
     // res.send("Here are your user details!");
 })
 
+app.get("/transactions",(req,res)=>{
+    //ok the improvement that could be made is to add the latest profit to he profit table
+    let query="SELECT * FROM transactions";
+    connection.query(query,(error,results)=>{
+        if(error){
+            console.log("Error fetching all profits");
+            console.log(error);
+            res.status(500).send("Error fetching all profits");
+            return;
+        }
+        // res.json(results);
+        res.json(JSON.parse(JSON.stringify(results)));
+        // console.log(results);
+    })
+    // res.send("Here are all your profits!");
+})
+
+app.get("/holdstock",(req,res)=>{
+    //ok the improvement that could be made is to add the latest profit to he profit table
+    let query="SELECT * FROM holdings";
+    connection.query(query,(error,results)=>{
+        if(error){
+            console.log("Error fetching all profits");
+            console.log(error);
+            res.status(500).send("Error fetching all profits");
+            return;
+        }
+        // res.json(results);
+        res.json(JSON.parse(JSON.stringify(results)));
+        // console.log(results);
+    })
+    // res.send("Here are all your profits!");
+})
+
 app.get("/getassets",(req,res)=>{
     let query="SELECT * FROM assets";
     connection.query(query,(error,results)=>{
